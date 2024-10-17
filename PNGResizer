@@ -1,5 +1,4 @@
-from PIL import Image, ImageResampling
-import os
+from PIL import Image
 import tkinter as tk
 from tkinter import filedialog
 
@@ -12,7 +11,7 @@ def resize_and_strip_metadata(input_path, output_path):
 
         # Reduce the size by half
         new_size = (width // 2, height // 2)
-        resized_img = img.resize(new_size, ImageResampling.LANCZOS)  # Updated for newer Pillow versions
+        resized_img = img.resize(new_size, Image.LANCZOS)  # Use LANCZOS for high-quality resizing
 
         # Save the resized image without metadata
         resized_img.save(output_path, format="PNG", optimize=True)
