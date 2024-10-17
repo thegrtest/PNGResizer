@@ -1,9 +1,9 @@
-from PIL import Image
+from PIL import Image, ImageFilter
 import tkinter as tk
 from tkinter import filedialog
 
-# Function to resize image and strip metadata
-def resize_and_strip_metadata(input_path, output_path):
+# Function to resize, sharpen image, and strip metadata
+def resize_sharpen_and_strip_metadata(input_path, output_path):
     # Open the image
     with Image.open(input_path) as img:
         # Get original dimensions
@@ -13,10 +13,13 @@ def resize_and_strip_metadata(input_path, output_path):
         new_size = (width // 2, height // 2)
         resized_img = img.resize(new_size, Image.LANCZOS)  # Use LANCZOS for high-quality resizing
 
-        # Save the resized image without metadata
-        resized_img.save(output_path, format="PNG", optimize=True)
+        # Sharpen the image
+        sharpened_img = resized_img.filter(ImageFilter.SHARPEN)
 
-    print(f"Resized image saved at {output_path}")
+        # Save the resized and sharpened image without metadata
+        sharpened_img.save(output_path, format="PNG", optimize=True)
+
+    print(f"Resized and sharpened image saved at {output_path}")
 
 # Function to open file dialog and select PNG file
 def select_file():
@@ -51,8 +54,8 @@ if __name__ == "__main__":
         save_location = select_save_location()
 
         if save_location:
-            # Call the function to resize and strip metadata
-            resize_and_strip_metadata(selected_file, save_location)
+            # Call the function to resize, sharpen, and strip metadata
+            resize_sharpen_and_strip_metadata(selected_file, save_location)
         else:
             print("No save location selected!")
     else:
