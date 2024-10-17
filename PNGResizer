@@ -1,4 +1,4 @@
-from PIL import Image
+from PIL import Image, ImageResampling
 import os
 import tkinter as tk
 from tkinter import filedialog
@@ -12,7 +12,7 @@ def resize_and_strip_metadata(input_path, output_path):
 
         # Reduce the size by half
         new_size = (width // 2, height // 2)
-        resized_img = img.resize(new_size, Image.ANTIALIAS)
+        resized_img = img.resize(new_size, ImageResampling.LANCZOS)  # Updated for newer Pillow versions
 
         # Save the resized image without metadata
         resized_img.save(output_path, format="PNG", optimize=True)
@@ -30,16 +30,31 @@ def select_file():
     )
     return file_path
 
+# Function to select the save location
+def select_save_location():
+    # Open file dialog to choose the save location
+    root = tk.Tk()
+    root.withdraw()  # Hide the main tkinter window
+    save_path = filedialog.asksaveasfilename(
+        title="Choose save location",
+        defaultextension=".png",  # Default to PNG format
+        filetypes=[("PNG files", "*.png")]
+    )
+    return save_path
+
 # Main program
 if __name__ == "__main__":
     # Ask user to select a PNG file
     selected_file = select_file()
 
     if selected_file:
-        # Output file path (save to Desktop)
-        output_image_path = os.path.expanduser("~/Desktop/resized_image.png")
+        # Ask user where to save the resized image
+        save_location = select_save_location()
 
-        # Call the function to resize and strip metadata
-        resize_and_strip_metadata(selected_file, output_image_path)
+        if save_location:
+            # Call the function to resize and strip metadata
+            resize_and_strip_metadata(selected_file, save_location)
+        else:
+            print("No save location selected!")
     else:
         print("No file selected!")
