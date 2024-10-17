@@ -2,28 +2,29 @@ from PIL import Image, ImageFilter
 import tkinter as tk
 from tkinter import filedialog
 
-# Function to resize, sharpen image, and strip metadata
-def resize_sharpen_and_strip_metadata(input_path, output_path):
-    # Open the image
+def resize_sharpen_and_smooth(input_path, output_path):
     with Image.open(input_path) as img:
-        # Get original dimensions
         width, height = img.size
-
-        # Reduce the size by half
+        
+        # Use LANCZOS for high-quality resizing
         new_size = (width // 2, height // 2)
-        resized_img = img.resize(new_size, Image.LANCZOS)  # Use LANCZOS for high-quality resizing
+        
+        # Resize the image using LANCZOS filter
+        resized_img = img.resize(new_size, Image.LANCZOS)
 
-        # Sharpen the image
-        sharpened_img = resized_img.filter(ImageFilter.SHARPEN)
+        # Apply a slight Gaussian blur for smoothing
+        smoothed_img = resized_img.filter(ImageFilter.GaussianBlur(radius=0.5))
 
-        # Save the resized and sharpened image without metadata
-        sharpened_img.save(output_path, format="PNG", optimize=True)
+        # Sharpen the image slightly after smoothing
+        final_img = smoothed_img.filter(ImageFilter.SHARPEN)
 
-    print(f"Resized and sharpened image saved at {output_path}")
+        # Save the final image without metadata
+        final_img.save(output_path, format="PNG", optimize=True)
+
+    print(f"Processed image saved at {output_path}")
 
 # Function to open file dialog and select PNG file
 def select_file():
-    # Open file dialog to select PNG file
     root = tk.Tk()
     root.withdraw()  # Hide the main tkinter window
     file_path = filedialog.askopenfilename(
@@ -34,7 +35,6 @@ def select_file():
 
 # Function to select the save location
 def select_save_location():
-    # Open file dialog to choose the save location
     root = tk.Tk()
     root.withdraw()  # Hide the main tkinter window
     save_path = filedialog.asksaveasfilename(
@@ -46,16 +46,13 @@ def select_save_location():
 
 # Main program
 if __name__ == "__main__":
-    # Ask user to select a PNG file
     selected_file = select_file()
 
     if selected_file:
-        # Ask user where to save the resized image
         save_location = select_save_location()
 
         if save_location:
-            # Call the function to resize, sharpen, and strip metadata
-            resize_sharpen_and_strip_metadata(selected_file, save_location)
+            resize_sharpen_and_smooth(selected_file, save_location)
         else:
             print("No save location selected!")
     else:
