@@ -1,0 +1,45 @@
+from PIL import Image
+import os
+import tkinter as tk
+from tkinter import filedialog
+
+# Function to resize image and strip metadata
+def resize_and_strip_metadata(input_path, output_path):
+    # Open the image
+    with Image.open(input_path) as img:
+        # Get original dimensions
+        width, height = img.size
+
+        # Reduce the size by half
+        new_size = (width // 2, height // 2)
+        resized_img = img.resize(new_size, Image.ANTIALIAS)
+
+        # Save the resized image without metadata
+        resized_img.save(output_path, format="PNG", optimize=True)
+
+    print(f"Resized image saved at {output_path}")
+
+# Function to open file dialog and select PNG file
+def select_file():
+    # Open file dialog to select PNG file
+    root = tk.Tk()
+    root.withdraw()  # Hide the main tkinter window
+    file_path = filedialog.askopenfilename(
+        title="Select a PNG file",
+        filetypes=[("PNG files", "*.png")]
+    )
+    return file_path
+
+# Main program
+if __name__ == "__main__":
+    # Ask user to select a PNG file
+    selected_file = select_file()
+
+    if selected_file:
+        # Output file path (save to Desktop)
+        output_image_path = os.path.expanduser("~/Desktop/resized_image.png")
+
+        # Call the function to resize and strip metadata
+        resize_and_strip_metadata(selected_file, output_image_path)
+    else:
+        print("No file selected!")
